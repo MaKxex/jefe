@@ -1,0 +1,35 @@
+{
+
+    
+    "main_msg": "Test",
+    "main_btn": "Назад",
+    
+    "embroidery_msg": "Название: {}\nРазмеры:\nВысота: {}\nШирина: {}",
+    "embroidery_btn": "Вышивки",
+    
+
+    "product_msg": "",
+    "product_btn": "Товары",
+    
+    
+    "thread_msg": "Список ниток: ",
+    "thread_btn": "Нитки",
+
+    "material_msg": "",
+    "material_btn": "Расходники",
+
+    "search_msg": "",
+    "search_btn": "Поиск",
+
+    "add_msg" : "",
+    "add_btn" : "Добавить",
+    
+    "page_next_btn": "➡️",
+    "page_back_btn": "⬅️",
+
+
+    "test_btn": "test",
+
+    "emb_thread_btn": "Список Ниток"
+
+}
