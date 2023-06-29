@@ -46,4 +46,4 @@ class Pages:
                 output += data[index].row_in_array()
             except IndexError:
                 break
-        return output
+        return [output]

@@ -79,6 +79,9 @@ async def callback_handler(callback_query: types.CallbackQuery):
     print(sub, func, args)
 
     chat_id = callback_query.message.chat.id
+    print("---------------------------")
+    
+    print(sub)
     msg = locale.get_("ru", sub + "_msg")
     btns = get_btns(sub=sub)
     dynamic_text = ""
@@ -95,11 +98,8 @@ async def callback_handler(callback_query: types.CallbackQuery):
         dynamic_text = custom_exec(func, callback_query.from_user.id,*args)
         if dynamic_text == None:
             dynamic_text = ""
-    print(args)
-    if type(dynamic_text) == str:
-        await api.edit_message_text(text=msg + dynamic_text, chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args),parse_mode="Markdown")
-    else:
-        await api.edit_message_text(text=msg.format(*dynamic_text), chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args),parse_mode="Markdown")
+
+    await api.edit_message_text(text=msg.format(*dynamic_text), chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args))
 
 
 executor.start_polling(dp, skip_updates=True)

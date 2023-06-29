@@ -5,10 +5,10 @@
     "main_btn": "Назад",
     
 
-    "emb_thread_list": "",
+    "emb_thread_list_msg": "Список ниток:\n{}",
     "emb_thread_list_btn": "Список ниток",
 
-    "embroidery_list": "Список вышивок:",
+    "embroidery_list_msg": "Список вышивок:\n{}",
     "embroidery_list_btn": "Вышивки",
 
     "embroidery_msg": "Название: {}\nРазмеры:\nВысота: {}\nШирина: {}",
@@ -19,7 +19,7 @@
     "product_btn": "Товары",
     
     
-    "thread_msg": "Список ниток:\n",
+    "thread_msg": "Список ниток:\n{}",
     "thread_btn": "Нитки",
 
     "material_msg": "",
@@ -30,12 +30,15 @@
 
     "add_msg" : "",
     "add_btn" : "Добавить",
+
+    "page_next_msg":"{}",
+    "page_back_msg":"{}",
     
     "page_next_btn": "➡️",
     "page_back_btn": "⬅️",
 
 
-    "test_btn": "test",
+    "test_btn": "test{}",
 
     "emb_thread_btn": "Список Ниток"
 
