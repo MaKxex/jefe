@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Sequence, Text, Integer, REAL, String, BigInteger
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import declarative_base
 
@@ -19,10 +20,10 @@ class Embroidery(Base):
         return f"<Embroidery(id={self.id}, name={self.name}, height={self.height}, width={self.width}, photo_link={self.photo_link}, rel_path={self.rel_path})>"
 
     def row_in_array(self):
-        return f"{self.name}\n/{self.__tablename__}{self.id}\n"
+        return f"{self.name} /{self.__tablename__}{self.id}\n".replace("_","-")
     
     def get_page(self):
-        return self.name, self.height, self.width, self.photo_link
+        return self.name.replace("_","-"), self.height, self.width, self.photo_link
 
     def get_threadList(self):
         pass
@@ -62,9 +63,13 @@ class Thread(Base):
     index = Column(Integer, primary_key=True)
     length = Column(REAL)
 
+    color = relationship("Color") 
+
     def __repr__(self):
         return f"<Thread(color_id={self.color_id}, embroidery_id={self.embroidery_id}, length={self.length})>"
     
+    def row_in_array(self):
+        return f"{self.index} {self.color_id} {self.color.name}\n"
 
 class Category(Base):
     __tablename__ = "category"
@@ -106,7 +111,10 @@ class Buttons(Base):
     f_name = Column(String)
     args = Column(String)
     show_on = Column(String)
-    pr = (Integer)
+    pr = Column(Integer)
+
+    def __repr__(self):
+            return f"Buttons(id={self.id}, sub={self.sub}, link_to={self.link_to}, f_name={self.f_name}, args={self.args}, show_on={self.show_on}, pr={self.pr})"
 
 
 
