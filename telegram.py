@@ -1,16 +1,29 @@
-from locales import get_locale as locale
+import logging
+
 from aiogram import Bot, Dispatcher, executor, md, types
 from aiogram.types import InlineKeyboardMarkup, KeyboardButton
-from config import TOKEN
-from sub_func import *
-import sub_func
-from upload_emb import scrap
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Command
 import re
 
+from config import TOKEN
+import sub_func
+from sub_func import *
+
+import upload_emb
+import locales as locale
+
+
+from FSM.handlers import *
+from FSM.states import *
+
 api = Bot(token = TOKEN, parse_mode=types.ParseMode.MARKDOWN)
-dp = Dispatcher(api)
+dp = Dispatcher(api, storage=MemoryStorage())
 
 image_base= -900601494
+
+logging.basicConfig(level=logging.INFO)
 
 
 def generate_btns(BtnsList:list, args="None"):
@@ -27,27 +40,32 @@ def generate_btns(BtnsList:list, args="None"):
 
     return markup
 
-def custom_exec(func_name, *args):
+async def custom_exec(func_name, *args):
     print(func_name)
     print(args)
     try:
-        return getattr(sub_func, func_name)(*args)
+        return await getattr(sub_func, func_name)(*args)
     except TypeError as e:
         print(e)
-        return getattr(sub_func, func_name)
+        return await getattr(sub_func, func_name)
 
 @dp.message_handler(commands=["start"])
 async def start(message):
     await main(message)
 
+
+
 @dp.message_handler(commands=["upload_emb"])
 async def start(message):
-    scrap.upload()
+    upload_emb.upload()
 
 @dp.message_handler(commands=["main"])
 async def main(message):
-    btns_list = get_btns(sub="main")
+    btns_list = await get_btns(sub="main")
     message = await message.reply(text="asd", reply_markup = generate_btns(btns_list))
+
+
+
     
 @dp.message_handler(regexp=r"/\b(" + "|".join(re.escape(word) for word in get_all_table_names()) + r"\w*)+\d+\b")
 async def regex(message):
@@ -57,14 +75,14 @@ async def regex(message):
     data = obj.get_page()
 
     msg = locale.get_("ru", table + "_msg")
-    btns = get_btns(sub=table)
+    btns = await get_btns(sub=table)
 
-
-
-    if obj.photo_link != "None":
-        photo = await api.download_file(obj.photo_link)
-        await api.send_photo(image_base,photo)
-
+    try:
+        if obj.photo_link != "None":
+            photo = await api.download_file(obj.photo_link)
+            await api.send_photo(image_base,photo)
+    except AttributeError:
+        pass
 
     await api.send_message(message.chat.id,text=msg.format(*data), reply_markup=generate_btns(btns,id))
 
@@ -72,18 +90,18 @@ async def regex(message):
 async def callback_handler(callback_query: types.CallbackQuery):
 
     await api.answer_callback_query(callback_query.id)
-    print(callback_query)
+    #print(callback_query)
     message = callback_query.message
 
     sub, func, args = callback_query.data.split("|") 
-    print(sub, func, args)
+    #print(sub, func, args)
 
     chat_id = callback_query.message.chat.id
-    print("---------------------------")
+    #print("---------------------------")
     
-    print(sub)
+    #print(sub)
     msg = locale.get_("ru", sub + "_msg")
-    btns = get_btns(sub=sub)
+    btns = await get_btns(sub=sub)
     dynamic_text = ""
 
     args = args.split(",")
@@ -95,11 +113,27 @@ async def callback_handler(callback_query: types.CallbackQuery):
         args = None
 
     if func != "None":
-        dynamic_text = custom_exec(func, callback_query.from_user.id,*args)
+        dynamic_text = await custom_exec(func, callback_query.from_user.id,api,*args)
         if dynamic_text == None:
             dynamic_text = ""
 
+    #print(dynamic_text)
     await api.edit_message_text(text=msg.format(*dynamic_text), chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args))
+
+@dp.callback_query_handler(state="*")
+async def FSM_callback_handler(callback_query: types.CallbackQuery, state: FSMContext):
+    await api.answer_callback_query(callback_query.id)
+    sub, func, args = callback_query.data.split("|") 
+    print(sub,func,args)
+    state_name = (await state.get_state()).split(":")[1]
+    async with state.proxy() as state_data:
+        state_data[state_name] = args
+
+    await SearchStates.next()
+
+dp.register_message_handler(search_form, state=SearchStates.WAITING_FOR_NAME.state)
+
+
 
 
 executor.start_polling(dp, skip_updates=True)

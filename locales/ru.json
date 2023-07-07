@@ -13,11 +13,18 @@
 
     "embroidery_msg": "Название: {}\nРазмеры:\nВысота: {}\nШирина: {}",
     "embroidery_btn": "Вышивки",
+
+    "search_embroidery_msg": "Напишите название вышивки",
     
 
     "product_msg": "",
     "product_btn": "Товары",
-    
+    "search_product_msg": "Напишите название продукта",
+
+
+
+    "color_msg": "Код: {}\nНазвание: {}\nКол-во: {}",
+    "search_color_msg" :"Напишите название цвета",
     
     "thread_msg": "Список ниток:\n{}",
     "thread_btn": "Нитки",
@@ -25,8 +32,13 @@
     "material_msg": "",
     "material_btn": "Расходники",
 
-    "search_msg": "",
-    "search_btn": "Поиск",
+    "search_hub_msg": "Выберите что искать",
+    "search_hub_btn": "Поиск",
+
+    "search_embroidery_btn": "Вышивку",
+    "search_color_btn": "Цвет",
+    "search_product_btn": "Продукт",
+
 
     "add_msg" : "",
     "add_btn" : "Добавить",

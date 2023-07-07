@@ -52,7 +52,10 @@ class Color(Base):
         return f"<Color(id={self.id}, catalog_id={self.catalog_id}, name={self.name})>"
     
     def row_in_array(self):
-        return f"{self.id} {self.name}: {0 if self.count == None else self.count}\n"
+        return f"/{self.__tablename__}{self.id} {self.name}: {0 if self.count == None else self.count}\n"
+    
+    def get_page(self):
+        return self.id, self.name, self.count
 
 
 

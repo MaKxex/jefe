@@ -1,10 +1,45 @@
 import pyembroidery
 import glob
 import os
+import db
+from db.models import *
 
 dir_path = r"C:\Users\Makxex\Desktop\MOT\MOT-EMBF\jefs"
 
 
+def get_all_colors(**target):
+    return db.gets_(Color, **target)
+
+def get_all_(table, **target):
+    return db.gets_(table,**target)
+
+def get_threadList_by(**target):
+    return db.gets_(Thread, **target)
+
+def get_embroidery_by(**target):
+    return db.get_(Embroidery, **target)
+
+def get_embroiderys_by(**target):
+    return db.gets_(Embroidery, **target)
+
+
+def get_all_table_names():
+    return [cls.__table__.name for cls in Base.__subclasses__()]
+
+
+def get_obj_by_str(tableName: str, id):
+    print(type(Embroidery))
+    return db.get_by_str(tableName, id)
+
+
+def get_color_hex_by_id(id):
+    with open("catalog\marathonVol3.csv", encoding="utf-8") as f:
+        catalog = f.readlines()
+
+        for color in catalog:
+            color_data = color.split(",")
+            if color_data[1][-4] == id:
+                return color_data[1][3]
 
 
 def calculate_path_length(file_path):
