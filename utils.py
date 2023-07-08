@@ -27,6 +27,9 @@ def get_all_table_names():
     return [cls.__table__.name for cls in Base.__subclasses__()]
 
 
+def get_model_by_str(tableName:str):
+    return db.get_model_by_str(tableName)
+
 def get_obj_by_str(tableName: str, id):
     print(type(Embroidery))
     return db.get_by_str(tableName, id)

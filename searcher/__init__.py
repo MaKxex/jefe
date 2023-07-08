@@ -11,10 +11,10 @@ def __longest_common_subsequence(word1, word2):
 
     return dp[m][n]
 
-def find_similar_words(target_word, word_list, threshold):
+def find_similar_words(target_word, word_list:list[object], threshold):
     similar_words = []
     for word in word_list:
-        similarity = __longest_common_subsequence(target_word.lower(), word.lower())
+        similarity = __longest_common_subsequence(target_word.lower(), word.name.lower())
         if similarity >= threshold:
             similar_words.append(word)
     return similar_words

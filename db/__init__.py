@@ -60,6 +60,16 @@ def get_primary_key(obj):
     primary_keys = [prop.key for prop in mapper.primary_key]
     return {key: getattr(obj, key) for key in primary_keys}
 
+
+def get_model_by_str(table:str):
+    try:
+
+        table = db.models.__dict__.get(table.capitalize())
+
+        return table
+    except Exception as e:
+        return None
+
 def get_by_str(table: str, id):
     try:
 

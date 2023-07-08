@@ -49,6 +49,10 @@ async def custom_exec(func_name, *args):
         print(e)
         return await getattr(sub_func, func_name)
 
+    except AttributeError as e:
+        print(e)
+        return None
+
 @dp.message_handler(commands=["start"])
 async def start(message):
     await main(message)
@@ -86,20 +90,10 @@ async def regex(message):
 
     await api.send_message(message.chat.id,text=msg.format(*data), reply_markup=generate_btns(btns,id))
 
-@dp.callback_query_handler()
-async def callback_handler(callback_query: types.CallbackQuery):
 
-    await api.answer_callback_query(callback_query.id)
-    #print(callback_query)
-    message = callback_query.message
-
+async def callback_handle_logic(callback_query):
     sub, func, args = callback_query.data.split("|") 
-    #print(sub, func, args)
 
-    chat_id = callback_query.message.chat.id
-    #print("---------------------------")
-    
-    #print(sub)
     msg = locale.get_("ru", sub + "_msg")
     btns = await get_btns(sub=sub)
     dynamic_text = ""
@@ -117,19 +111,36 @@ async def callback_handler(callback_query: types.CallbackQuery):
         if dynamic_text == None:
             dynamic_text = ""
 
+    return dynamic_text, msg, btns, args
+
+
+@dp.callback_query_handler()
+async def callback_handler(callback_query: types.CallbackQuery):
+
+    await api.answer_callback_query(callback_query.id)
+    #print(callback_query)
+    message = callback_query.message
+    chat_id = callback_query.message.chat.id
+
+    dynamic_text, msg, btns, args = await callback_handle_logic(callback_query)
     #print(dynamic_text)
     await api.edit_message_text(text=msg.format(*dynamic_text), chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args))
 
 @dp.callback_query_handler(state="*")
 async def FSM_callback_handler(callback_query: types.CallbackQuery, state: FSMContext):
     await api.answer_callback_query(callback_query.id)
-    sub, func, args = callback_query.data.split("|") 
-    print(sub,func,args)
+    message = callback_query.message
+    chat_id = callback_query.message.chat.id
+
+    dynamic_text, msg, btns, args = await callback_handle_logic(callback_query)
+
     state_name = (await state.get_state()).split(":")[1]
     async with state.proxy() as state_data:
-        state_data[state_name] = args
+        state_data[state_name] = args[0]
 
     await SearchStates.next()
+
+    await api.edit_message_text(text=msg.format(*dynamic_text), chat_id=chat_id, message_id=message.message_id,reply_markup=generate_btns(btns,*args))
 
 dp.register_message_handler(search_form, state=SearchStates.WAITING_FOR_NAME.state)
 
